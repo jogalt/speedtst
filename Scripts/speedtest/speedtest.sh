@@ -6,7 +6,14 @@ BASE="/opt/librenms/html/plugins/Speedtest/"
 DATE=$(/bin/date +%s)
 
 #Get the raw data
-speedtest-cli --simple --share --server 4240 > /opt/speedtest/speedtest.txt
+#speedtest-cli --simple --share --server 4240 > /opt/speedtest/speedtest.txt
+### You could use the above line but the server list file doesn't match and was pulling an error.
+### This cascaded into rrd not having input validation and the script failing.
+### Run with above command without --server 4240 and let Speedtest-cli find the closest server.
+### This is likely to be your ISP. My thought process: to average the expected versus
+### real throughput promised by the ISP -> Consumer agreement.
+
+speedtest-cli --simple --share > /opt/speedtest/speedtest.txt
 
 #Clean it up and get raw Ping time in ms
 RAW_MS=$(cat /opt/speedtest/speedtest.txt | grep P | sed -r 's/\s+//g'| cut -d":" -f2 | cut -d"m" -f1)
